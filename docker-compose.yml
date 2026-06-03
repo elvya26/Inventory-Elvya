@@ -1,0 +1,69 @@
+services:
+  traefik:
+    image: traefik:v3.1
+    container_name: inventory-traefik
+    command:
+      - --api.dashboard=true
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - inventory-net
+
+  pencatatan:
+    build: .
+    container_name: inventory-pencatatan
+    env_file:
+      - .env
+    environment:
+      SERVICE_NAME: pencatatan
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.pencatatan.rule=(Host(`inventory.localhost`) || Host(`localhost`)) && (Path(`/`) || PathPrefix(`/pencatatan`) || PathPrefix(`/css`) || PathPrefix(`/storage`) || Path(`/up`))
+      - traefik.http.routers.pencatatan.entrypoints=web
+      - traefik.http.routers.pencatatan.priority=20
+      - traefik.http.services.pencatatan.loadbalancer.server.port=8000
+    networks:
+      - inventory-net
+
+  cetak-laporan:
+    build: .
+    container_name: inventory-cetak-laporan
+    env_file:
+      - .env
+    environment:
+      SERVICE_NAME: cetak-laporan
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.cetak-laporan.rule=(Host(`inventory.localhost`) || Host(`localhost`)) && PathPrefix(`/laporan`)
+      - traefik.http.routers.cetak-laporan.entrypoints=web
+      - traefik.http.routers.cetak-laporan.priority=30
+      - traefik.http.services.cetak-laporan.loadbalancer.server.port=8000
+    networks:
+      - inventory-net
+
+  notif-komunikasi:
+    build: .
+    container_name: inventory-notif-komunikasi
+    env_file:
+      - .env
+    environment:
+      SERVICE_NAME: notif-komunikasi
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.notif-komunikasi.rule=(Host(`inventory.localhost`) || Host(`localhost`)) && PathPrefix(`/notifikasi`)
+      - traefik.http.routers.notif-komunikasi.entrypoints=web
+      - traefik.http.routers.notif-komunikasi.priority=30
+      - traefik.http.services.notif-komunikasi.loadbalancer.server.port=8000
+    networks:
+      - inventory-net
+
+networks:
+  inventory-net:
+    driver: bridge
