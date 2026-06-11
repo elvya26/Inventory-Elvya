@@ -18,7 +18,7 @@ Traefik berjalan sebagai reverse proxy di `http://inventory.localhost`, dengan d
    Copy-Item .env.example .env
    ```
 
-2. Isi kredensial Neon PostgreSQL di `.env`.
+2. Isi kredensial Neon PostgreSQL dan Google OAuth di `.env`.
 
    ```env
    DB_HOST=ep-your-neon-host.ap-southeast-1.aws.neon.tech
@@ -27,6 +27,11 @@ Traefik berjalan sebagai reverse proxy di `http://inventory.localhost`, dengan d
    DB_USERNAME=neondb_owner
    DB_PASSWORD=password_neon
    DB_SSLMODE=require
+
+   SESSION_DRIVER=database
+   GOOGLE_CLIENT_ID=your-google-client-id
+   GOOGLE_CLIENT_SECRET=your-google-client-secret
+   GOOGLE_REDIRECT_URI=http://localhost:8000/auth/google/callback
    ```
 
 3. Jalankan Docker Desktop, lalu build container.
@@ -41,10 +46,10 @@ Traefik berjalan sebagai reverse proxy di `http://inventory.localhost`, dengan d
    docker compose exec pencatatan php artisan migrate --seed
    ```
 
-5. Buka aplikasi.
+5. Buka aplikasi (gunakan port 8000 agar login Google berfungsi).
 
    ```text
-   http://inventory.localhost
+   http://localhost:8000
    ```
 
 ## Catatan Neon

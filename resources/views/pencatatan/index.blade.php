@@ -30,7 +30,16 @@
             @forelse ($items as $item)
                 <tr>
                     <td>{{ $item->sku }}</td>
-                    <td>{{ $item->name }}</td>
+                    <td>
+                        <div class="item-cell">
+                            @if ($item->image_path)
+                                <img class="item-thumb" src="{{ $item->image_path }}" alt="Gambar {{ $item->name }}">
+                            @else
+                                <span class="item-thumb item-thumb--empty" aria-hidden="true">—</span>
+                            @endif
+                            <span>{{ $item->name }}</span>
+                        </div>
+                    </td>
                     <td>{{ $item->category }}</td>
                     <td>{{ $item->current_stock }} {{ $item->unit }}</td>
                     <td>{{ $item->location ?: '-' }}</td>
@@ -40,7 +49,14 @@
                         </span>
                     </td>
                     <td>
-                        <a class="btn" href="{{ route('pencatatan.show', $item) }}">Detail</a>
+                        <div class="table-actions">
+                            <a class="btn" href="{{ route('pencatatan.show', $item) }}">Detail</a>
+                            <form method="POST" action="{{ route('pencatatan.destroy', $item) }}" onsubmit="return confirm('Hapus barang {{ $item->name }}?')">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn danger" type="submit">Hapus</button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
             @empty

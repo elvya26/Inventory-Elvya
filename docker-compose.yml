@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: traefik:v3.1
+    image: traefik:v3.7.1
     container_name: inventory-traefik
     command:
       - --api.dashboard=true
@@ -23,9 +23,13 @@ services:
       - .env
     environment:
       SERVICE_NAME: pencatatan
+    ports:
+      - "8000:8000"
+    volumes:
+      - app-storage:/var/www/html/storage/app/public
     labels:
       - traefik.enable=true
-      - traefik.http.routers.pencatatan.rule=(Host(`inventory.localhost`) || Host(`localhost`)) && (Path(`/`) || PathPrefix(`/pencatatan`) || PathPrefix(`/css`) || PathPrefix(`/storage`) || Path(`/up`))
+      - traefik.http.routers.pencatatan.rule=(Host(`inventory.localhost`) || Host(`localhost`)) && (Path(`/`) || PathPrefix(`/pencatatan`) || PathPrefix(`/css`) || PathPrefix(`/storage`) || PathPrefix(`/login`) || PathPrefix(`/auth`) || Path(`/logout`) || Path(`/up`))
       - traefik.http.routers.pencatatan.entrypoints=web
       - traefik.http.routers.pencatatan.priority=20
       - traefik.http.services.pencatatan.loadbalancer.server.port=8000
@@ -39,6 +43,8 @@ services:
       - .env
     environment:
       SERVICE_NAME: cetak-laporan
+    volumes:
+      - app-storage:/var/www/html/storage/app/public
     labels:
       - traefik.enable=true
       - traefik.http.routers.cetak-laporan.rule=(Host(`inventory.localhost`) || Host(`localhost`)) && PathPrefix(`/laporan`)
@@ -55,6 +61,8 @@ services:
       - .env
     environment:
       SERVICE_NAME: notif-komunikasi
+    volumes:
+      - app-storage:/var/www/html/storage/app/public
     labels:
       - traefik.enable=true
       - traefik.http.routers.notif-komunikasi.rule=(Host(`inventory.localhost`) || Host(`localhost`)) && PathPrefix(`/notifikasi`)
@@ -67,3 +75,6 @@ services:
 networks:
   inventory-net:
     driver: bridge
+
+volumes:
+  app-storage:

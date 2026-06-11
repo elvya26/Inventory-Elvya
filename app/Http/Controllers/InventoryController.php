@@ -10,6 +10,43 @@ use Illuminate\View\View;
 
 class InventoryController extends Controller
 {
+    private function attachMedia(array $data, ?Item $item = null): array
+    {
+        unset($data['image_path'], $data['video_path']);
+
+        if (request()->hasFile('image_path')) {
+            $file = request()->file('image_path');
+            if ($file && $file->isValid()) {
+                if ($item?->image_path) {
+                    Item::deleteStoredFile($item->image_path);
+                }
+                $path = $file->store('items/images', 'public');
+                $data['image_path'] = $path ? '/storage/'.$path : null;
+            } elseif ($item) {
+                $data['image_path'] = $item->image_path;
+            }
+        } elseif ($item) {
+            $data['image_path'] = $item->image_path;
+        }
+
+        if (request()->hasFile('video_path')) {
+            $file = request()->file('video_path');
+            if ($file && $file->isValid()) {
+                if ($item?->video_path) {
+                    Item::deleteStoredFile($item->video_path);
+                }
+                $path = $file->store('items/videos', 'public');
+                $data['video_path'] = $path ? '/storage/'.$path : null;
+            } elseif ($item) {
+                $data['video_path'] = $item->video_path;
+            }
+        } elseif ($item) {
+            $data['video_path'] = $item->video_path;
+        }
+
+        return $data;
+    }
+
     public function index(Request $request): View
     {
         $items = Item::query()
@@ -34,7 +71,11 @@ class InventoryController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        Item::create($this->validatedItem($request));
+        $data = $this->validatedItem($request);
+
+        $data = $this->attachMedia($data);
+
+        Item::create($data);
 
         return redirect()->route('pencatatan.index')->with('status', 'Barang berhasil ditambahkan.');
     }
@@ -53,7 +94,11 @@ class InventoryController extends Controller
 
     public function update(Request $request, Item $pencatatan): RedirectResponse
     {
-        $pencatatan->update($this->validatedItem($request, $pencatatan->id));
+        $data = $this->validatedItem($request, $pencatatan->id);
+
+        $data = $this->attachMedia($data, $pencatatan);
+
+        $pencatatan->update($data);
 
         return redirect()->route('pencatatan.show', $pencatatan)->with('status', 'Data barang berhasil diperbarui.');
     }
@@ -64,6 +109,7 @@ class InventoryController extends Controller
 
         return redirect()->route('pencatatan.index')->with('status', 'Data barang berhasil dihapus.');
     }
+
 
     public function storeMovement(Request $request, Item $item): RedirectResponse
     {
@@ -94,14 +140,20 @@ class InventoryController extends Controller
 
     private function validatedItem(Request $request, ?int $ignoreId = null): array
     {
+        // Pastikan ignoreId valid untuk rule unique PostgreSQL
+        $ignoreId = $ignoreId !== null ? (int) $ignoreId : null;
+
         return $request->validate([
-            'sku' => ['required', 'string', 'max:50', 'unique:items,sku,'.$ignoreId],
+            'sku' => ['required', 'string', 'max:50', $ignoreId === null ? 'unique:items,sku' : 'unique:items,sku,'.$ignoreId],
             'name' => ['required', 'string', 'max:160'],
             'category' => ['required', 'string', 'max:100'],
             'unit' => ['required', 'string', 'max:30'],
             'current_stock' => ['required', 'integer', 'min:0'],
             'minimum_stock' => ['required', 'integer', 'min:0'],
             'location' => ['nullable', 'string', 'max:120'],
+            // Hindari rule 'image'/'mimetypes' yang butuh guesser fileinfo (bisa error kalau disabled)
+            'image_path' => ['nullable', 'file', 'max:4096'],
+            'video_path' => ['nullable', 'file', 'max:10240'],
         ]);
     }
 }

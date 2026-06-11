@@ -15,9 +15,16 @@
                 <a class="{{ request()->routeIs('pencatatan.*') ? 'active' : '' }}" href="{{ route('pencatatan.index') }}">Pencatatan</a>
                 <a class="{{ request()->routeIs('laporan.*') ? 'active' : '' }}" href="{{ route('laporan.index') }}">Cetak Laporan</a>
                 <a class="{{ request()->routeIs('notifikasi.*') ? 'active' : '' }}" href="{{ route('notifikasi.index') }}">Notif & Komunikasi</a>
+
+                @if (session()->has('user_id'))
+                    <a href="{{ route('logout') }}">Logout</a>
+                @else
+                    <a href="{{ route('login') }}">Masuk</a>
+                @endif
             </nav>
         </div>
     </header>
+
 
     <main class="page">
         @if (session('status'))

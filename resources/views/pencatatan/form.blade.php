@@ -8,7 +8,7 @@
         </div>
     </div>
 
-    <form class="panel" method="POST" action="{{ $item->exists ? route('pencatatan.update', $item) : route('pencatatan.store') }}">
+<form class="panel" method="POST" action="{{ $item->exists ? route('pencatatan.update', $item) : route('pencatatan.store') }}" enctype="multipart/form-data">
         @csrf
         @if ($item->exists)
             @method('PUT')
@@ -35,6 +35,24 @@
             </label>
             <label>Lokasi
                 <input name="location" value="{{ old('location', $item->location) }}">
+            </label>
+
+            <label>Gambar (opsional)
+                <input type="file" name="image_path" accept="image/*">
+                @if ($item->image_path)
+                    <small class="muted">File saat ini:</small>
+                    <img style="max-width:220px; width:100%; height:auto; border-radius:8px; margin-top:6px" src="{{ $item->image_path }}" alt="Gambar {{ $item->name }}">
+                @endif
+            </label>
+
+            <label>Video (opsional)
+                <input type="file" name="video_path" accept="video/*">
+                @if ($item->video_path)
+                    <small class="muted">File saat ini:</small>
+                    <video controls style="max-width:280px; width:100%; border-radius:8px; margin-top:6px">
+                        <source src="{{ $item->video_path }}">
+                    </video>
+                @endif
             </label>
         </div>
 

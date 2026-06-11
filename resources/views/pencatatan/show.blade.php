@@ -31,6 +31,29 @@
         </div>
     </section>
 
+    @if ($item->image_path || $item->video_path)
+        <section class="panel" style="margin-top:16px">
+            <h2>Media Barang</h2>
+
+            @if ($item->image_path)
+                <div style="margin:10px 0">
+                    <span class="muted">Gambar</span><br>
+                    <img style="max-width:420px; width:100%; height:auto; border-radius:10px" src="{{ $item->image_path }}" alt="Gambar {{ $item->name }}">
+                </div>
+            @endif
+
+            @if ($item->video_path)
+                <div style="margin:10px 0">
+                    <span class="muted">Video</span><br>
+                    <video controls style="max-width:520px; width:100%; border-radius:10px">
+                        <source src="{{ $item->video_path }}">
+                        Browser kamu tidak mendukung tag video.
+                    </video>
+                </div>
+            @endif
+        </section>
+    @endif
+
     <section class="panel" style="margin-top:16px">
         <h2>Tambah Mutasi</h2>
         <form method="POST" action="{{ route('pencatatan.mutasi', $item) }}">

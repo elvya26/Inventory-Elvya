@@ -4,7 +4,7 @@
   "description": "Aplikasi inventory Laravel dengan service pencatatan, cetak laporan, serta notif dan komunikasi.",
   "require": {
     "php": "^8.2",
-    "laravel/framework": "^11.0",
+    "laravel/framework": "^12.0",
     "laravel/tinker": "^2.9"
   },
   "autoload": {
