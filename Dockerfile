@@ -7,9 +7,10 @@ RUN apk add --no-cache \
     icu-dev \
     libpq-dev \
     oniguruma-dev \
+    sqlite-dev \
     unzip \
     zip \
-    && docker-php-ext-install curl intl mbstring pdo_pgsql
+    && docker-php-ext-install curl intl mbstring pdo_pgsql pdo_mysql pdo_sqlite
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
@@ -22,7 +23,7 @@ COPY . .
 
 RUN composer dump-autoload --optimize \
     && mkdir -p storage/app/public storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache
+    && chmod -R 777 storage bootstrap/cache
 
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN sed -i 's/\r$//' /usr/local/bin/entrypoint.sh \
@@ -31,3 +32,4 @@ RUN sed -i 's/\r$//' /usr/local/bin/entrypoint.sh \
 EXPOSE 8000
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
