@@ -11,6 +11,8 @@ class DashboardController extends Controller
 {
     public function __invoke(): View
     {
+        $paidStatuses = ['paid', 'shipped', 'completed'];
+
         return view('dashboard', [
             'serviceName' => env('SERVICE_NAME', 'inventory'),
             'itemsCount' => Item::count(),
@@ -18,6 +20,11 @@ class DashboardController extends Controller
             'movementCount' => StockMovement::count(),
             'pendingNotifications' => NotificationMessage::where('status', 'draft')->count(),
             'recentMovements' => StockMovement::with('item')->latest('occurred_at')->limit(5)->get(),
+
+            // E-commerce metrics
+            'ordersCount' => \App\Models\Order::count(),
+            'revenue' => \App\Models\Order::whereIn('status', $paidStatuses)->sum('total_amount'),
+            'recentOrders' => \App\Models\Order::latest()->limit(5)->get(),
         ]);
     }
 }

@@ -16,7 +16,11 @@
         </div>
     </div>
 
-    <section class="grid stats">
+    <section class="grid stats" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+        <div class="card">
+            <span class="muted">Harga Barang</span>
+            <span class="stat-number">Rp {{ number_format($item->price, 0, ',', '.') }}</span>
+        </div>
         <div class="card">
             <span class="muted">Stok Saat Ini</span>
             <span class="stat-number">{{ $item->current_stock }} {{ $item->unit }}</span>

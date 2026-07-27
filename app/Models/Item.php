@@ -16,6 +16,7 @@ class Item extends Model
         'name',
         'category',
         'unit',
+        'price',
         'current_stock',
         'minimum_stock',
         'location',
@@ -26,6 +27,7 @@ class Item extends Model
     protected $casts = [
         'current_stock' => 'integer',
         'minimum_stock' => 'integer',
+        'price' => 'decimal:2',
     ];
 
     protected static function booted(): void

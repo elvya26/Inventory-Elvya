@@ -20,6 +20,7 @@
                 <th>SKU</th>
                 <th>Barang</th>
                 <th>Kategori</th>
+                <th>Harga</th>
                 <th>Stok</th>
                 <th>Lokasi</th>
                 <th>Status</th>
@@ -41,6 +42,7 @@
                         </div>
                     </td>
                     <td>{{ $item->category }}</td>
+                    <td>Rp {{ number_format($item->price, 0, ',', '.') }}</td>
                     <td>{{ $item->current_stock }} {{ $item->unit }}</td>
                     <td>{{ $item->location ?: '-' }}</td>
                     <td>
@@ -61,7 +63,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="7" class="muted">Data barang belum tersedia.</td>
+                    <td colspan="8" class="muted">Data barang belum tersedia.</td>
                 </tr>
             @endforelse
         </tbody>

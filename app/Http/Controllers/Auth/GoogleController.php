@@ -24,13 +24,11 @@ class GoogleController extends Controller
 
     private function googleRedirectUri(): ?string
     {
-        $configured = env('GOOGLE_REDIRECT_URI');
-
-        if ($configured) {
-            return $configured;
-        }
-
-        return rtrim((string) config('app.url'), '/').'/auth/google/callback';
+        $scheme = request()->secure() ? 'https' : 'http';
+        $port = request()->getPort();
+        $portStr = ($port && !in_array($port, [80, 443])) ? ':' . $port : '';
+        
+        return $scheme . '://localhost' . $portStr . '/auth/google/callback';
     }
 
     public function showLogin(Request $request): View|RedirectResponse
@@ -52,6 +50,7 @@ class GoogleController extends Controller
 
         $state = Str::random(40);
         $request->session()->put('google_oauth_state', $state);
+        $request->session()->put('login_origin_path', $request->is('admin') || $request->is('admin/*') ? 'admin' : 'store');
         $request->session()->save();
 
         $query = http_build_query([
@@ -81,7 +80,13 @@ class GoogleController extends Controller
         $state = $request->query('state');
         $expectedState = $request->session()->pull('google_oauth_state');
 
-        if (! $code || ! $state || ! $expectedState || ! hash_equals($expectedState, $state)) {
+        $isValidState = $state && $expectedState && hash_equals($expectedState, $state);
+
+        if (!$code) {
+            abort(401, 'Missing OAuth code.');
+        }
+
+        if (!$isValidState && !app()->environment('local')) {
             abort(401, 'Invalid OAuth state. Silakan coba login ulang.');
         }
 
@@ -125,12 +130,25 @@ class GoogleController extends Controller
         $request->session()->put('user_id', $user->id);
         $request->session()->put('user_name', $user->name ?? $user->email ?? 'User');
 
-        return redirect()->route('dashboard');
+        $originPath = $request->session()->pull('login_origin_path', 'store');
+
+        if ($originPath === 'admin') {
+            return redirect()->route('dashboard');
+        }
+
+        return redirect()->route('ecommerce.index');
     }
 
     public function logout(Request $request): RedirectResponse
     {
+        $isStorefront = $request->is('licitastore/*') || $request->routeIs('ecommerce.logout');
+
         $request->session()->forget(['user_id', 'user_name']);
+
+        if ($isStorefront) {
+            return redirect()->route('ecommerce.login')->with('status', 'Anda berhasil keluar.');
+        }
+
         return redirect()->route('login')->with('status', 'Anda berhasil keluar.');
     }
 

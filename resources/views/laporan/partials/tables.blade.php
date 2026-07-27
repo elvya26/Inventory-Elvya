@@ -6,6 +6,7 @@
                 <th>SKU</th>
                 <th>Barang</th>
                 <th>Kategori</th>
+                <th>Harga</th>
                 <th>Stok</th>
                 <th>Minimum</th>
                 <th>Status</th>
@@ -17,13 +18,14 @@
                     <td>{{ $item->sku }}</td>
                     <td>{{ $item->name }}</td>
                     <td>{{ $item->category }}</td>
+                    <td>Rp {{ number_format($item->price, 0, ',', '.') }}</td>
                     <td>{{ $item->current_stock }} {{ $item->unit }}</td>
                     <td>{{ $item->minimum_stock }}</td>
                     <td>{{ $item->isLowStock() ? 'Menipis' : 'Aman' }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6" class="muted">Belum ada data barang.</td>
+                    <td colspan="7" class="muted">Belum ada data barang.</td>
                 </tr>
             @endforelse
         </tbody>

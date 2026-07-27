@@ -148,6 +148,7 @@ class InventoryController extends Controller
             'name' => ['required', 'string', 'max:160'],
             'category' => ['required', 'string', 'max:100'],
             'unit' => ['required', 'string', 'max:30'],
+            'price' => ['required', 'numeric', 'min:0'],
             'current_stock' => ['required', 'integer', 'min:0'],
             'minimum_stock' => ['required', 'integer', 'min:0'],
             'location' => ['nullable', 'string', 'max:120'],

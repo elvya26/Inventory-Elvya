@@ -11,6 +11,9 @@ class RequireLogin
     public function handle(Request $request, Closure $next): Response
     {
         if (! $request->session()->has('user_id')) {
+            if ($request->is('licitastore') || $request->is('licitastore/*')) {
+                return redirect()->route('ecommerce.login');
+            }
             return redirect()->route('login');
         }
 
