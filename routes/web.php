@@ -16,6 +16,11 @@ use App\Http\Middleware\RequireLogin;
 // Shared Google OAuth callback route (used by both Admin and Storefront)
 Route::get('/auth/google/callback', [GoogleController::class, 'handleCallback'])->name('login.google.callback');
 
+// Redirect root domain to storefront
+Route::get('/', function () {
+    return redirect('/licitastore');
+});
+
 // =============================================================
 // 1. ADMIN PANEL ROUTES (Prefix: /admin)
 // =============================================================
