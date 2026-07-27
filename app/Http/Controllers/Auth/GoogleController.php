@@ -24,11 +24,11 @@ class GoogleController extends Controller
 
     private function googleRedirectUri(): ?string
     {
-        $scheme = request()->secure() ? 'https' : 'http';
-        $port = request()->getPort();
-        $portStr = ($port && !in_array($port, [80, 443])) ? ':' . $port : '';
-        
-        return $scheme . '://localhost' . $portStr . '/auth/google/callback';
+        if ($envUri = env('GOOGLE_REDIRECT_URI')) {
+            return $envUri;
+        }
+
+        return route('login.google.callback');
     }
 
     public function showLogin(Request $request): View|RedirectResponse
