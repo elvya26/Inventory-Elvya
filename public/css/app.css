@@ -499,6 +499,45 @@ body.app-layout {
   z-index: 100;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 24px 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  z-index: 95;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.sidebar-overlay.open {
+  opacity: 1;
+  visibility: visible;
 }
 
 .sidebar-header {
@@ -795,9 +834,25 @@ body.app-layout {
   height: 100%;
 }
 
+/* Responsive Utilities & Table Wrappers */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+
+.table-responsive table {
+  border: none;
+  min-width: 600px;
+}
+
 @media (max-width: 992px) {
   .sidebar {
     transform: translateX(-100%);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
   }
   
   .sidebar.open {
@@ -813,17 +868,63 @@ body.app-layout {
   }
   
   .content-wrapper {
-    padding: 20px;
+    padding: 20px 16px;
   }
   
   .form-layout-container {
     grid-template-columns: 1fr;
   }
+
+  .header-row,
+  .actions-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .stats {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
 }
 
 @media (max-width: 600px) {
+  h1 {
+    font-size: 22px;
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+
   .form-row-2,
-  .form-row-3 {
+  .form-row-3,
+  .form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .actions-row .btn,
+  .header-row .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .table-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .table-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .auth-card {
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  .item-cell {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

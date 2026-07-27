@@ -188,9 +188,13 @@
         </main>
     </div>
 
+    <!-- Overlay for mobile sidebar -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
     <script>
         function toggleSidebar() {
             document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('open');
         }
     </script>
 </body>
